@@ -27,9 +27,17 @@ async function run() {
         await client.connect();
 
         const cardCollection = client.db("cardDB").collection("card");
+        const myCartCollection = client.db("cardDB").collection("myCart");
 
         app.get("/card", async (req, res) => {
             const cursor = cardCollection.find();
+
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+
+        app.get("/myCart", async (req, res) => {
+            const cursor = myCartCollection.find();
 
             const result = await cursor.toArray();
             res.send(result);
@@ -48,6 +56,13 @@ async function run() {
             console.log(NewCard);
 
             const result = await cardCollection.insertOne(NewCard);
+            res.send(result);
+        });
+        app.post("/myCart", async (req, res) => {
+            const myCart = req.body;
+            console.log(myCart);
+
+            const result = await myCartCollection.insertOne(myCart);
             res.send(result);
         });
 
