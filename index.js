@@ -40,6 +40,7 @@ async function run() {
             const cursor = myCartCollection.find();
 
             const result = await cursor.toArray();
+            console.log(result, "mycart result");
             res.send(result);
         });
 
