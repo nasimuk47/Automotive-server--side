@@ -8,7 +8,7 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.qtgfrql.mongodb.net/?retryWrites=true&w=majority`;
 
 console.log(uri);
@@ -35,11 +35,47 @@ async function run() {
             res.send(result);
         });
 
+        app.get("/card/:id", async (req, res) => {
+            const id = req.params.id;
+
+            const query = { _id: new ObjectId(id) };
+            const result = await cardCollection.findOne(query);
+            res.send(result);
+        });
+
         app.post("/Cards", async (req, res) => {
             const NewCard = req.body;
             console.log(NewCard);
 
             const result = await cardCollection.insertOne(NewCard);
+            res.send(result);
+        });
+
+        app.put("/card/:id", async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const option = { upsert: true };
+
+            const updateCar = req.body;
+
+            const updateForm = {
+                $set: {
+                    name: updateCar.name,
+                    brand: updateCar.brand,
+                    type: updateCar.type,
+                    price: updateCar.price,
+                    description: updateCar.description,
+                    rating: updateCar.rating,
+                    photo: updateCar.photo,
+                },
+            };
+
+            const result = await cardCollection.updateOne(
+                filter,
+                updateForm,
+                option
+            );
+
             res.send(result);
         });
 
